@@ -1,0 +1,12 @@
+<!DOCTYPE keyword
+[
+<!ELEMENT  keyword(value,filter,frequency,url)>
+<!ELEMENT value (#PCDATA)>
+<!ELEMENT filter (#PCDATA)>
+<!ELEMENT frequency (#PCDATA)>
+<!ELEMENT url (#PCDATA)>
+
+<!ATTLIST fading CDATA >
+
+<!ENTITY c s “Computer Science" >
+]>

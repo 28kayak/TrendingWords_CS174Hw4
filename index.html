@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>test</title>
+<meta name="description" value="this example illustrates how Javascripts are executed both when the document is loaded and on the occurrence of events" />
+<script type="text/javascript" >
+function sayHello()
+{
+  alert("hi there");
+}
+
+function first()
+{
+  var self = this; /* remember scope of enclosing
+                            object */
+  request = new XMLHttpRequest();
+
+  request.open("GET", "http://localhost/hw4/proxy.php", true)
+  request.onreadystatechange = function()
+  {
+    switch(request.readyState)
+    {
+      case 0:// handle uninitialized case
+        alert("case 0");
+        break;
+      case 1: // handle open but no send case
+        alert("case 1");
+        break;
+      case 2: // handle send but no response case
+        alert("case 2");
+        break;
+      case 3: // handle response is being downloaded case
+        alert("case 3");
+        break;
+      case 4: // handle response has completed being downloaded case
+        alert("case 4");
+        alert(request.responseText);//request.responseText stores retrun value
+        document.getElementById("myDivTag").innerHTML =  request.responseText;
+                                          //or we could do...
+        break;
+      }
+    }
+    request.send(null);
+
+}
+</script>
+
+</head>
+<body>
+              <form>
+              <input type="button" value="test" onclick="return first();" />
+              <!-- responds to events -->
+              </form>
+
+<div id="test" style="visibility: hidden">hi there</div>
+<div id="myDivTag"></div>
+<input type="button" onclick='show("test")' />
+<script type="text/javascript">
+function show(id)
+{
+    myStyle = document.getElementById(id).style;
+    myStyle.visibility = "visible";
+}
+</script>
+
+<!--
+<script type="text/javascript" >
+for( i = 0; i<100; i++) {
+    document.writeln("<p>hi"+i+"</p>");
+}
+// run when document loads
+</script>
+-->
+</body>
+</html>

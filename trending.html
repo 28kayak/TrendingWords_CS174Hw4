@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>test</title>
+<meta name="description" value="this example" />
+<script type="text/javascript" >
+	function sayHello()
+	{
+		alert("hi there");
+	}
+
+
+	function first()
+	{
+
+		var self = this; /* remember scope of enclosing object */
+		request = new XMLHttpRequest();
+
+		var keyword = document.getElementById("queryForm").elements[0].value;
+
+		var format = document.getElementById("queryForm").format.value;
+		//alert(keyword+"  "+format);
+
+		var url = "http://localhost/hw4/proxy.php?q="+keyword+"&f="+format;
+		//alert(url);
+		request.open("GET", url, true)
+		request.onreadystatechange = function()
+			{
+				if (request.readyState==4 && request.status==200)
+    			{
+					//alert("case 4");
+					//alert(request.responseText);
+    				document.getElementById("myDivTag").innerHTML= request.responseText;
+
+					var top100 = JSON.parse(request.responseText);
+
+					//alert(top100.language);
+
+					document.getElementById("numTag").innerHTML = "<h3>Number of Result: "+top100.totalResults+"</h3>";
+					var resultText = "<table border=\"1\" bordercolor=\"#333333\"><tr><th>title</th><th>desc</th></tr>"
+					var totalNumber = Math.min(top100.totalResults, top100.itemsPerPage);
+					//alert(totalNumber);
+
+
+					var keyword_list = new Array();
+					var keyword_list1 = new Array();
+					for (var i=0;i<totalNumber;i++) {
+						var title = top100.channel[i].title;
+						var lists = title.split( /[\s\'\":;?.,]/ );
+						//keyword_list.push(lists);
+						Array.prototype.push.apply(keyword_list, lists);
+
+						var desc = top100.channel[i].desc;
+						var lists1 = desc.split( /[\s\'\":;?.,]/ );
+						keyword_list.push(lists1);
+						Array.prototype.push.apply(keyword_list1, lists1);
+
+
+					}
+					//alert(keyword_list);
+					var resultText2="";
+					resultText2= keyword_list.join("<br/>")+resultText2;
+
+					//document.getElementById("myDivTag").innerHTML= resultText2;
+
+					var a = keyword_list.reduce(function (acc, curr) {
+						if (typeof acc[curr] == 'undefined') {
+							acc[curr] = 1;
+						} else {
+							acc[curr] += 1;
+						}
+
+						return acc;
+					}, {});
+
+					//alert("here it is");
+
+					txt = "[";
+					for (word in a){
+						//txt=txt+"{\"keyword\":\""+word+"\", \"count\":"+a[word]+"},";
+						txt=txt+'{"keyword":"'+word+'", "count":'+a[word]+'},';
+
+					}
+					var txt2=txt.substring(0,txt.length-1);
+					txt2=txt2+"]";
+
+					temp2=JSON.parse(txt2);
+					//console.log(temp2);
+
+
+					temp2.sort(function(a,b){
+    					if(a.count<b.count) return 1;
+    					if(a.count > b.count) return -1;
+    					return 0;
+					});
+					console.log(temp2);
+
+						console.log(temp2[0]);
+					//alert(temp2[0]);
+
+					//alert(JSON.stringify(a));
+					var ranking="";
+					for (var i=10;i<20;i++){
+						ranking+=temp2[i].keyword+","+temp2[i].count+"<br/>";
+					}
+					//document.getElementById("resultTag").innerHTML= JSON.stringify(temp2[0]);
+					document.getElementById("resultTag").innerHTML= JSON.stringify(ranking);
+
+
+					resultChart='<table summary="Word Frequency associating with keyword." cellpadding="0" cellspacing="0">';
+					//resultChart+='<caption align="top">Top banana importers 1998 (value of banana imports in millions of US dollars per million people)<br><br></caption>';
+					resultChart+='<tbody><tr><th scope="col"><span class="auraltext">Words</span></th>';
+					resultChart+='<th scope="col"><span class="auraltext">Word Frequency</span> </th></tr>';
+					lineOne='';
+					for (var i=10;i<totalNumber;i++) {
+						resultChart+='<tr><td class="first">'+temp2[i].keyword+'</td>';
+						resultChart+='<td class="value first"><img src="bar.png" alt="" height="16" width="'+temp2[i].count*10+'">'+temp2[i].count+'</td></tr>';
+
+						if (top100.channel[i].hasOwnProperty('description')){
+							resultText = resultText+"<td>"+top100.channel[i].description+"</td>";
+						}
+					}
+					resultChart+="</tbody></table>"
+					alert(resultChart);
+
+					document.getElementById("resultTag").innerHTML = resultChart;
+
+
+
+
+
+
+
+	    		}
+
+			}
+
+		request.send(null);
+
+	}
+</script>
+
+</head>
+
+<body>
+<!-- <div id="test" style="visibility: hidden">hi there</div>-->
+<div id="RequestForm">
+	<form id="queryForm">
+	Keyword
+	<input type="text" name="keyword" value="computer"><br>
+	Format
+	<input type="radio" name="format" value="rss" >RSS
+	<input type="radio" name="format" value="json" checked>JSON<br>
+	<input type="button" value="Search" onclick="return first();" />
+	<!-- responds to events -->
+	</form>
+</div>
+
+
+<div id="numTag"></div>
+
+<h1>Result</h1>
+<div id="resultTag"></div>
+<br/>
+<h1>All</h1>
+<div id="myDivTag"></div>
+
+</body>
+</html>
+
+<!--ｒｓｓをやる＝＝＞　ｐｈｐのほうで、ｊそんになおす。
+棒グラフの下にｘｍｌをかくｄｔｄにあってるような
+for-loopでテーブルをかく代わりに、キーワードとかいれる。 -->

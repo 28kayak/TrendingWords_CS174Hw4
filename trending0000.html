@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>test</title>
+<meta name="description" value="this example illustrates how Javascripts are executed both when the document is loaded and on the occurrence of events" />
+<script type="text/javascript" >
+   function sayHello()
+   {
+      alert("hi there");
+   } 
+
+
+
+
+
+
+
+
+
+
+
+function first()
+{
+
+	var self = this; /* remember scope of enclosing 
+                            object */
+	request = new XMLHttpRequest();
+	request.open("GET", "http://localhost/hw4/proxy.php", true)
+	request.onreadystatechange = function()
+	{
+		if (request.readyState==4 && request.status==200)
+    		{
+			alert("case 4");
+    			document.getElementById("myDivTag").innerHTML= request.responseText;
+
+			var top100 = JSON.parse(request.responseText);
+			
+			alert(top100.language);
+			var resultText = "<table border=\"1\" bordercolor=\"#333333\"><tr><th>title</th><th>desc</th></tr>"
+			for (var i=0;i<10;i++) {
+				resultText = resultText+"<tr><td>"+top100.channel[i].title+"</td>";
+				if (top100.channel[i].hasOwnProperty('description')){
+					resultText = resultText+"<td>"+top100.channel[i].description+"</td>";
+				}
+				resultText = resultText+"</tr>";
+			}
+			resultText=resultText+"</table>"
+			alert(resultText);
+
+			document.getElementById("resultTag").innerHTML = resultText;
+
+    		}
+
+	}
+	
+	request.send(null);
+
+}
+</script>
+
+</head>
+<body>
+	<form>
+	<input type="text" name="keyword">
+	<input type="radio" name="format" value="rss" checked>RSS<br>
+	<input type="radio" name="format" value="json" >JSON<br>
+
+	<input type="button" value="test" onclick="return first();" />
+	<!-- responds to events -->
+	</form>
+
+<div id="test" style="visibility: hidden">hi there</div>
+<h1>Result</h1>
+<div id="resultTag"></div>
+<h2>All</h2>
+<div id="myDivTag"></div>
+<input type="button" onclick='show("test")' />
+<script type="text/javascript"> 
+function show(id)
+    {
+		myStyle = document.getElementById(id).style;
+       myStyle.visibility = "visible";
+    }
+</script>
+
+<!--
+<script type="text/javascript" >
+for( i = 0; i<100; i++) { 
+    document.writeln("<p>hi"+i+"</p>");
+}
+// run when document loads
+</script>
+-->
+</body>
+</html>
